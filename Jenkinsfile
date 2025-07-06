@@ -26,6 +26,15 @@ pipeline {
         sh 'docker build -t springtp-app .'
       }
     }
+    stage('Debug Compose') {
+      steps {
+        sh '''
+          echo "Répertoire actuel : $(pwd)"
+          echo "Contenu :"
+          ls -la
+        '''
+      }
+    }
 
     stage('Docker Compose Up') {
       steps {
