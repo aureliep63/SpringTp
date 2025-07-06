@@ -6,7 +6,7 @@ services:
       MYSQL_DATABASE: SpringTp
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     ports:
-      - "3320:3306"
+      - "3330:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -20,7 +20,7 @@ services:
       - maven_cache:/root/.m2
 
     ports:
-      - "8086:8080"
+      - "8088:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -34,8 +34,8 @@ services:
     user: root
     privileged: true
     ports:
-      - "8085:8080"
-      - "50005:50000"
+      - "8089:8080"
+      - "50006:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
