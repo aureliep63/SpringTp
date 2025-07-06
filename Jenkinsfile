@@ -8,11 +8,6 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps {
-        git 'https://github.com/aureliep63/SpringTp.git'
-      }
-    }
 
     stage('Build') {
       steps {
