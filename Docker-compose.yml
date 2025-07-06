@@ -7,24 +7,31 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     ports:
       - "3310:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3309/SpringTp
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/SpringTp
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD:
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build: ./jenkins-docker
     user: root
     privileged: true
     ports:
-      - "8080:8080"
+      - "8082:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home

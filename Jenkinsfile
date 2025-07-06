@@ -6,7 +6,7 @@ pipeline {
     }
 
   environment {
-    SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3309/SpringTp"
+    SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3306/SpringTp"
     SPRING_DATASOURCE_USERNAME = "root"
     SPRING_DATASOURCE_PASSWORD = ""
   }
