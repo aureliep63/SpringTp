@@ -9,7 +9,11 @@ RUN apt-get update && \
     mv docker/docker /usr/local/bin/ && \
     rm -rf docker
 
-# Créer le groupe docker s’il n’existe pas, puis ajouter jenkins à ce groupe
+# Installer Maven
+RUN apt-get update && \
+    apt-get install -y maven
+
+# Ajouter l'utilisateur Jenkins au groupe docker
 RUN groupadd -f docker && usermod -aG docker jenkins
 
 USER jenkins
