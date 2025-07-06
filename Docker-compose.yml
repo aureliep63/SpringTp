@@ -4,8 +4,7 @@ services:
     image: mysql:8
     environment:
       MYSQL_DATABASE: SpringTp
-      # Permet le mot de passe root vide
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true" # <--- Ajouté ici
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     ports:
       - "3309:3306"
 
@@ -18,4 +17,21 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3309/SpringTp
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: # <--- Le mot de passe reste vide ici
+      SPRING_DATASOURCE_PASSWORD:
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - //var/run/docker.sock:/var/run/docker.sock
+      - "C:/Program Files/Docker/Docker/resources/bin/docker.exe:/usr/bin/docker"
+    networks:
+      - default
+
+volumes:
+  jenkins_home:
