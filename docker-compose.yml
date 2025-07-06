@@ -6,7 +6,7 @@ services:
       MYSQL_DATABASE: SpringTp
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     ports:
-      - "3310:3306"
+      - "3320:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
