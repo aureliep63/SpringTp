@@ -6,7 +6,7 @@ services:
       MYSQL_DATABASE: SpringTp
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     ports:
-      - "3309:3306"
+      - "3310:3306"
 
   app:
     build: .
@@ -28,7 +28,7 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - //var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
       - "C:/Program Files/Docker/Docker/resources/bin/docker.exe:/usr/bin/docker"
     networks:
       - default
