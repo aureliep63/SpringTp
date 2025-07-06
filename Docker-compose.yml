@@ -4,7 +4,8 @@ services:
     image: mysql:8
     environment:
       MYSQL_DATABASE: SpringTp
-      MYSQL_ROOT_PASSWORD:
+      # Permet le mot de passe root vide
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true" # <--- Ajouté ici
     ports:
       - "3309:3306"
 
@@ -17,4 +18,4 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3309/SpringTp
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_PASSWORD: # <--- Le mot de passe reste vide ici
