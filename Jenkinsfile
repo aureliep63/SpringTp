@@ -1,5 +1,5 @@
 pipeline {
-   agent agent any
+   agent any
 
   environment {
     SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3306/SpringTp"
