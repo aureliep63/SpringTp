@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3306/gamedb"
+    SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3309/SpringTp"
     SPRING_DATASOURCE_USERNAME = "root"
     SPRING_DATASOURCE_PASSWORD = "root"
   }
@@ -10,7 +10,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/<ton-utilisateur>/<ton-repo>.git'
+        git 'https://github.com/aureliep63/SpringTp.git'
       }
     }
 
