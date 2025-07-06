@@ -1,0 +1,63 @@
+package hb.fr.SrpingTp.services.impl;
+
+import hb.fr.SrpingTp.dto.CategorieDto;
+import hb.fr.SrpingTp.dto.JeuDto;
+import hb.fr.SrpingTp.dto.JoueurDto;
+import hb.fr.SrpingTp.mapper.CategorieMapper;
+import hb.fr.SrpingTp.models.Categorie;
+import hb.fr.SrpingTp.models.Editeur;
+import hb.fr.SrpingTp.models.Jeu;
+import hb.fr.SrpingTp.repository.CategorieRepository;
+import hb.fr.SrpingTp.repository.JeuRepository;
+import hb.fr.SrpingTp.services.CategorieService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class CategorieServiceImpl implements CategorieService {
+
+    private CategorieDto categorieDto;
+    private CategorieMapper categorieMapper;
+    private CategorieRepository categorieRepository;
+    private JeuRepository jeuRepository;
+
+    public CategorieServiceImpl(CategorieRepository categorieRepository,CategorieMapper categorieMapper, JeuRepository jeuRepository) {
+        this.categorieRepository = categorieRepository;
+        this.categorieMapper = categorieMapper;
+        this.jeuRepository = jeuRepository;
+    }
+
+    @Override
+    public List<CategorieDto> getAllCategories() {
+        List<Categorie> categories = categorieRepository.findAll();
+        return categories.stream()
+                            .map(categorieMapper::toDto)
+                            .collect(Collectors.toList());
+    }
+
+    @Override
+    public CategorieDto getCategorieById(Long id) {
+        return categorieRepository.findById(id)
+                .map(categorieMapper::toDto)
+                .orElse(null);
+    }
+    @Override
+    public Categorie saveCategorie(CategorieDto categorieDto) {
+        Categorie categorie = categorieMapper.toEntity(categorieDto);
+        if(categorieDto.getJeuxId() != null && !categorieDto.getJeuxId().isEmpty()) {
+        List<Jeu> jeux = jeuRepository.findAllById(categorieDto.getJeuxId());
+            categorie.setJeux(jeux);
+        }
+        return categorieRepository.save(categorie);
+    }
+
+
+    @Override
+    public void deleteCategorie(Long id) {
+        categorieRepository.deleteById(id);
+    }
+}

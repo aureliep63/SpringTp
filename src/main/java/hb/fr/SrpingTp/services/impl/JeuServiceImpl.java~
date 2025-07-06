@@ -1,0 +1,98 @@
+package hb.fr.SrpingTp.services.impl;
+
+import hb.fr.SrpingTp.dto.JeuDto;
+import hb.fr.SrpingTp.mapper.JeuMapper;
+import hb.fr.SrpingTp.models.Categorie;
+import hb.fr.SrpingTp.models.Edition;
+import hb.fr.SrpingTp.models.Jeu;
+import hb.fr.SrpingTp.repository.CategorieRepository;
+import hb.fr.SrpingTp.repository.EditionRepository;
+import hb.fr.SrpingTp.repository.JeuRepository;
+import hb.fr.SrpingTp.services.JeuService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class JeuServiceImpl implements JeuService {
+
+  private JeuMapper jeuMapper;
+  private EditionRepository editionRepository;
+  private CategorieRepository categorieRepository;
+  private JeuRepository jeuRepository;
+
+  private JeuDto jeuDto;
+
+    // contructeur
+    public JeuServiceImpl(JeuRepository jeuRepository,
+                          JeuMapper jeuMapper,
+                          EditionRepository editionRepository,
+                          CategorieRepository categorieRepository
+                         ) {
+        this.jeuRepository = jeuRepository;
+        this.jeuMapper = jeuMapper;
+        this.editionRepository = editionRepository;
+        this.categorieRepository = categorieRepository;
+
+
+    }
+
+// on utilise les dto pour avoir tous les jeux
+    @Override
+    public List<JeuDto> getAllJeux() {
+        // récupère la lite des entités et on les convertis en dto
+        List<Jeu> jeux = jeuRepository.findAll();
+        return jeux.stream()
+                    .map(jeuMapper::toDto)// Utilise le mapper pour convertir chaque entité en DTO
+                    .collect(Collectors.toList());
+    }
+    // Utiliser DTO pour obtenir un jeu par ID
+    @Override
+    public JeuDto getJeuById(Long id) {
+        return jeuRepository.findById(id)
+                .map(jeuMapper::toDto)// Convertir l'entité en DTO s'il existe
+                .orElse(null);// Ou gérer autrement l'absence du jeu
+    }
+
+    @Override
+    public Jeu saveJeu(JeuDto jeuDto) {
+        Jeu jeu = new Jeu();
+
+        // S'il y a un ID, on essaie de mettre à jour un jeu existant
+        if (jeuDto.getId() != null) {
+            jeu = jeuRepository.findById(jeuDto.getId()).orElse(new Jeu());
+            jeu.setId(jeuDto.getId());
+        }
+
+        jeu.setNom(jeuDto.getNom());
+        jeu.setDescription(jeuDto.getDescription());
+        jeu.setNombreJoueursMin(jeuDto.getNombreJoueursMin());
+        jeu.setNombreJoueursMax(jeuDto.getNombreJoueursMax());
+        jeu.setDuree(jeuDto.getDuree());
+        jeu.setYear(jeuDto.getYear());
+        // Charger la catégorie (entité attachée à la session Hibernate)
+        if (jeuDto.getCategorieId() != null) {
+            Categorie categorie = categorieRepository.findById(jeuDto.getCategorieId())
+                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+            jeu.setCategorie(categorie);
+        }
+        // Charger les éditions (entités attachées aussi)
+        if (jeuDto.getEditionsId() != null && !jeuDto.getEditionsId().isEmpty()) {
+            List<Edition> editions = editionRepository.findAllById(jeuDto.getEditionsId());
+            jeu.setEditions(editions);
+        } else {
+            jeu.setEditions(new ArrayList<>());
+        }
+        return jeuRepository.save(jeu);
+    }
+
+    // Suppression d'un jeu par ID
+    @Override
+    public void deleteJeu(Long id) {
+        jeuRepository.deleteById(id);
+    }
+}
