@@ -1,51 +1,51 @@
 pipeline {
    agent {
       docker {
-         image 'maven:3.9.6-eclipse-temurin-17'
-         // Ajoute le montage du socket Docker de l'hôte
-         args '-v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker' // Assurez-vous que le binaire docker est aussi disponible
+         image 'maven:3.9.6-eclipse-temurin-21'
+         // IMPORTANT: Mount the Docker socket and binary from the host
+         // This allows the Docker client inside the Jenkins agent to communicate with the host's Docker daemon
+         args '-v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
       }
     }
 
   environment {
-    // Les variables d'environnement pour l'application Spring Boot sont mieux gérées dans le docker-compose.yml
-    // et transmises au conteneur 'app' par docker-compose.
-    // Vous n'avez pas besoin de les définir ici pour le build Maven.
-    // Cependant, si vous voulez les utiliser pour d'autres étapes Jenkins non liées à Docker Compose, vous pouvez les garder.
+    // These environment variables are more relevant for the 'app' service in docker-compose.yml
+    // You typically don't need them directly in the Jenkinsfile environment block for Maven build/test.
+    // However, if you have other Jenkins steps that use them, you can keep them.
     SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3309/SpringTp"
     SPRING_DATASOURCE_USERNAME = "root"
-    SPRING_DATASOURCE_PASSWORD = "root"
+    SPRING_DATASOURCE_PASSWORD = "" // Ensure this matches your no-password setup
   }
 
   stages {
 
     stage('Build') {
       steps {
-        // Le build Maven est fait par l'agent Docker Maven
+        // Maven build is done by the Maven Docker agent
         sh 'mvn clean package -DskipTests'
       }
     }
 
     stage('Test') {
       steps {
-        // Assurez-vous d'avoir des tests JUnit pour cette étape
+        // Make sure you have JUnit tests for this stage
         sh 'mvn test'
       }
     }
 
     stage('Docker Build') {
       steps {
-        // Construit l'image de l'application Spring Boot
+        // Build the Spring Boot application image
         sh 'docker build -t springtp-app .'
       }
     }
 
     stage('Docker Compose Up') {
       steps {
-        // Lance les services définis dans docker-compose.yml
-        // Assurez-vous d'avoir Docker Compose installé sur la machine hôte,
-        // ou ajoutez-le à l'image de l'agent si vous voulez qu'il soit exécuté depuis le conteneur.
-        // Si vous utilisez un agent Docker pour Jenkins, il faut aussi monter le binaire docker-compose.
+        // Start the services defined in docker-compose.yml
+        // NOTE: docker-compose must be installed on the Jenkins host machine,
+        // or you'd need to add it to your agent image and mount its binary too.
+        // For simplicity, it's assumed docker-compose is on the host.
         sh 'docker-compose up -d'
       }
     }
