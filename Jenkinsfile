@@ -1,9 +1,5 @@
 pipeline {
-   agent {
-      docker {
-         image 'maven:3.9.6-eclipse-temurin-21'
-      }
-    }
+   agent agent any
 
   environment {
     SPRING_DATASOURCE_URL = "jdbc:mysql://mysql:3306/SpringTp"
